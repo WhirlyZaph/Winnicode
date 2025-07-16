@@ -1,0 +1,5 @@
+images/Galon.jpg|Industri|Industri minuman siap saji mengalami pertumbuhan pesat di berbagai kota besar Indonesia dengan konsep yang praktis dan modern.|Ahmad Pratama|07 Juni 2025
+images/Artificial_Intelligence.jpg|Teknologi|Teknologi kecerdasan buatan terus berkembang dengan pesat, menghadirkan inovasi baru dalam berbagai sektor industri.|Sari Indrawati|06 Juni 2025
+images/BBM.jpg|Industri|Fluktuasi harga bahan bakar minyak memberikan dampak signifikan terhadap perekonomian nasional dan daya beli masyarakat.|Budi Santoso|05 Juni 2025
+images/Festival.jpeg|Budaya|Festival budaya tradisional Indonesia menjadi daya tarik utama bagi wisatawan mancanegara yang ingin mengenal kekayaan budaya lokal.|Maya Kusuma|04 Juni 2025
+images/Startup.jpg|Teknologi|Startup teknologi lokal berhasil meraih pendanaan internasional yang akan digunakan untuk ekspansi ke pasar regional.|Rian Hidayat|03 Juni 2025

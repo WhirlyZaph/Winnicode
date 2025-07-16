@@ -1,0 +1,220 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="index.css">
+	<link rel="stylesheet" href="keyframes.css">
+    <title>WinniCode - Portal Berita</title>
+</head>
+<body>
+    <header>
+        <img src="banner-logo.png" alt="WinniCode Logo" width="195" height="78">
+        <nav>
+            <a href="#">Beranda</a>
+            <a href="#">Program</a>
+            <a href="#">Pengumuman</a>
+            <a href="#">Berita</a>
+            <a href="#">Tentang</a>
+        </nav>
+    </header>
+    
+	<div class="headline-container">
+		<div class="headline" id="headline">
+			<span class="breaking-prefix">Breaking: </span>
+			<span id="dynamic-text">Menjamurnya Industri Drink to go di Indonesia</span>
+		</div>
+	</div>
+    
+    <div class="main-content">
+        <div class="top-news">
+			<div class="news-list-container">
+				<ul class="news-list">
+					<li class="news-item">
+						<img src="images/Gempa.jpg" alt="Gempa" class="news-thumb">
+						<div class="news-text">
+							<h3>Gempa 7.2 SR Guncang Sulawesi Tengah</h3>
+							<p>Tim SAR terus melakukan pencarian korban selamat di reruntuhan bangunan. Ribuan warga mengungsi ke tempat yang lebih aman.</p>
+						</div>
+					</li>
+					<li class="news-item">
+						<img src="images/Sembako.jpeg" alt="Sembako" class="news-thumb">
+						<div class="news-text">
+							<h3>Harga Sembako Naik 15% Jelang Lebaran</h3>
+							<p>Kenaikan tajam harga beras, minyak goreng, dan gula pasir membuat daya beli masyarakat menurun drastis di berbagai daerah.</p>
+						</div>
+					</li>
+					<li class="news-item">
+						<img src="images/Kebakaran.webp" alt="Kebakaran" class="news-thumb">
+						<div class="news-text">
+							<h3>Kebakaran Hutan Riau Meluas ke 5000 Hektar</h3>
+							<p>Kabut asap tebal menyelimuti Pekanbaru dan sekitarnya. Pemerintah mengerahkan 10 helikopter water bombing untuk memadamkan api.</p>
+						</div>
+					</li>
+					<li class="news-item">
+						<img src="images/Banjir.webp" alt="Banjir" class="news-thumb">
+						<div class="news-text">
+							<h3>Banjir Besar Landa Jakarta Timur</h3>
+							<p>Hujan lebat selama dua hari menyebabkan tinggi air mencapai 1,5 meter di beberapa permukiman padat penduduk.</p>
+						</div>
+					</li>
+					<li class="news-item">
+						<img src="images/Startup2.jpg" alt="Startup" class="news-thumb">
+						<div class="news-text">
+							<h3>Startup Lokal Raih Pendanaan Seri B</h3>
+							<p>Perusahaan rintisan bidang agritech mendapatkan investasi Rp150 miliar untuk ekspansi ke Asia Tenggara.</p>
+						</div>
+					</li>
+					<li class="news-item">
+						<img src="images/ElNino.webp" alt="El Nino" class="news-thumb">
+						<div class="news-text">
+							<h3>BMKG Peringatkan Dampak El Nino di 2025</h3>
+							<p>Fenomena cuaca ekstrem diprediksi memperburuk kekeringan di wilayah Jawa Tengah dan NTB.</p>
+						</div>
+					</li>
+					<li class="news-item">
+						<img src="images/MinyakGoreng.jpeg" alt="Minyak Goreng" class="news-thumb">
+						<div class="news-text">
+							<h3>Stok Minyak Goreng Menipis Jelang Idul Adha</h3>
+							<p>Distribusi terganggu akibat keterlambatan pengiriman di pelabuhan utama Surabaya dan Makassar.</p>
+						</div>
+					</li>
+					<li class="news-item">
+						<img src="images/Haji2025.jpeg" alt="Haji" class="news-thumb">
+						<div class="news-text">
+							<h3>Jemaah Haji Indonesia 2025 Capai Rekor Tertinggi</h3>
+							<p>Lebih dari 300.000 jemaah berangkat tahun ini. Pemerintah siapkan tambahan pesawat dan petugas kesehatan.</p>
+						</div>
+					</li>
+				</ul>
+			</div>
+            <div class="breaking-news-image">
+                <div class="news-feature" id="newsFeature">
+                    <div class="image-container" id="imageContainer">
+                        <img src="news-images" alt="news terbaru" id="newsImage" class="news-image">
+                        <span class="category" id="imageCategory">Kategori</span>
+                    </div>
+					<div class="image-description">
+						<p id="imageDescription">deskripsi</p>
+						<div class="news-meta" id="newsMeta">
+							<span class="author" id="imageAuthor">author</span>
+							<span class="date" id="imageDate">3 hari yang lalu</span>
+						</div>
+					</div>
+                </div>
+            </div>
+        </div>
+		
+        <div class="secondary-news">
+            <h2>Berita Terbaru</h2>
+			
+			<!-- Search Bar -->
+			<div class="search-bar">
+			  <input type="text" id="searchBox" placeholder="Cari berita..." />
+			</div>
+            
+			<div class="news-scroll-container">
+				<button class="scroll-arrow scroll-left" id="scrollLeftBtn">⬅</button>
+				<div class="news-section">
+					<div class="news-card" data-id="665f17c9e7ad7adfd1098f44">
+						<img src="images/UU Energi.avif" alt="UU Energi" class="card-thumb">
+						<span class="category">Politik & Pemerintahan</span>
+						<h3>DPR Sahkan UU Baru Tentang Energi Terbarukan</h3>
+						<p>Undang-undang ini mewajibkan perusahaan besar menggunakan minimal 30% energi terbarukan dalam operasional mereka mulai tahun 2026.</p>
+						<div class="card-social">
+							<button class="icon-btn like-btn" title="Like">❤️ <span class="like-count">0</span></button>
+							<button class="icon-btn comment-btn" title="Comment">💬 <span class="comment-count">0</span></button>
+							<button class="icon-btn share-btn" title="Share">🔗</button>
+							<button class="icon-btn save-btn" title="Save">🔖 <span class="save-count">0</span></button>
+						</div>
+					</div>
+					<div class="news-card" data-id="665f18c9e7ad7adfd1098f45">
+						<img src="images/Bunga Acuan.jpg" alt="Bunga Acuan" class="card-thumb">
+						<span class="category">Ekonomi & Bisnis</span>
+						<h3>Bank Indonesia Pertahankan Suku Bunga Acuan 6%</h3>
+						<p>Keputusan ini diambil untuk menjaga stabilitas rupiah dan mengantisipasi tekanan inflasi yang masih tinggi di kuartal ini.</p>
+						<div class="card-social">
+							<button class="icon-btn like-btn" title="Like">❤️ <span class="like-count">0</span></button>
+							<button class="icon-btn comment-btn" title="Comment">💬 <span class="comment-count">0</span></button>
+							<button class="icon-btn share-btn" title="Share">🔗</button>
+							<button class="icon-btn save-btn" title="Save">🔖 <span class="save-count">0</span></button>
+						</div>
+					</div>
+					<div class="news-card" data-id="665f19c9e7ad7adfd1098f46">
+						<img src="images/Satelit Nusantara.jpg" alt="Satelit Nusantara" class="card-thumb">
+						<span class="category">Teknologi & Inovasi</span>
+						<h3>Peluncuran Satelit Nusantara-1 Sukses Dilakukan</h3>
+						<p>Satelit komunikasi buatan dalam negeri ini akan meningkatkan akses internet di daerah terpencil Indonesia bagian timur hingga 10 kali lipat.</p>
+						<div class="card-social">
+							<button class="icon-btn like-btn" title="Like">❤️ <span class="like-count">0</span></button>
+							<button class="icon-btn comment-btn" title="Comment">💬 <span class="comment-count">0</span></button>
+							<button class="icon-btn share-btn" title="Share">🔗</button>
+							<button class="icon-btn save-btn" title="Save">🔖 <span class="save-count">0</span></button>
+						</div>
+					</div>
+					<div class="news-card" data-id="665f2000e7ad7adfd1098f50">
+						<img src="images/AI Education.webp" alt="AI Education" class="card-thumb">
+						<span class="category">Teknologi & Edukasi</span>
+						<h3>Kurikulum AI Masuk Sekolah SMA Tahun Depan</h3>
+						<p>Kemendikbud akan meluncurkan kurikulum dasar AI untuk siswa SMA sebagai bagian dari program literasi digital nasional.</p>
+						<div class="card-social">
+							<button class="icon-btn like-btn" title="Like">❤️ <span class="like-count">0</span></button>
+							<button class="icon-btn comment-btn" title="Comment">💬 <span class="comment-count">0</span></button>
+							<button class="icon-btn share-btn" title="Share">🔗</button>
+							<button class="icon-btn save-btn" title="Save">🔖 <span class="save-count">0</span></button>
+						</div>
+					</div>
+					<div class="news-card" data-id="665f2001e7ad7adfd1098f51">
+						<img src="images/MRT.jpg" alt="MRT Jakarta" class="card-thumb">
+						<span class="category">Infrastruktur</span>
+						<h3>Proyek MRT Fase 3 Jakarta Dimulai Awal 2026</h3>
+						<p>Jalur baru akan mencakup wilayah barat ke timur, menghubungkan Bandara Soekarno-Hatta hingga Pondok Gede.</p>
+						<div class="card-social">
+							<button class="icon-btn like-btn" title="Like">❤️ <span class="like-count">0</span></button>
+							<button class="icon-btn comment-btn" title="Comment">💬 <span class="comment-count">0</span></button>
+							<button class="icon-btn share-btn" title="Share">🔗</button>
+							<button class="icon-btn save-btn" title="Save">🔖 <span class="save-count">0</span></button>
+						</div>
+					</div>
+					<div class="news-card" data-id="665f2002e7ad7adfd1098f52">
+						<img src="images/Garuda.jpg" alt="Garuda Indonesia" class="card-thumb">
+						<span class="category">Transportasi & Bisnis</span>
+						<h3>Garuda Indonesia Tambah Rute Penerbangan Internasional</h3>
+						<p>Maskapai nasional menambah 7 rute baru untuk mendukung pariwisata dan memperkuat konektivitas ASEAN.</p>
+						<div class="card-social">
+							<button class="icon-btn like-btn" title="Like">❤️ <span class="like-count">0</span></button>
+							<button class="icon-btn comment-btn" title="Comment">💬 <span class="comment-count">0</span></button>
+							<button class="icon-btn share-btn" title="Share">🔗</button>
+							<button class="icon-btn save-btn" title="Save">🔖 <span class="save-count">0</span></button>
+						</div>
+					</div>
+				</div>
+				<button class="scroll-arrow scroll-right" id="scrollRightBtn">➡</button>
+			</div>
+            
+        </div>
+    </div>
+	
+	
+
+	<!-- Input Fields (Initially Hidden) -->
+	<div class="comment-fields-wrapper">
+		<div id="commentFields" style="display: none;">
+		  <label for="nameInput">Name:</label><br />
+		  <input type="text" id="nameInput" placeholder="Your name" /><br /><br />
+		  <label for="commentInput">Comment:</label><br />
+		  <textarea id="commentInput" placeholder="Your comment"></textarea><br /><br />
+		  <button id="submitCommentBtn">Submit</button>
+		</div>
+	</div>
+
+	<!-- Comment History Box -->
+	<h3>Comment History</h3>
+	<div id="commentHistory" style="border: 1px solid #ccc; padding: 10px; max-height: 200px; overflow-y: auto;"></div>
+    
+    <footer>
+        <p>&copy; 2025 WinniCode. All rights reserved.</p>
+    </footer>
+	<script type="text/javascript" src="index.js" defer></script>
+</body>
+</html>

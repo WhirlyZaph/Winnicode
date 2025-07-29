@@ -532,7 +532,6 @@ document.querySelectorAll('.news-card').forEach(card => {
     // Attach submit logic to new button
     const submitBtn = clonedFields.querySelector('#submitCommentBtn');
     const nameInput = clonedFields.querySelector('#nameInput');
-    const commentInput = clonedFields.querySelector('#commentInput');
     const captchaCheckbox = clonedFields.querySelector('#captchaCheckbox');
 
     submitBtn.addEventListener('click', async () => {

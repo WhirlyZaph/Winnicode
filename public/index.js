@@ -304,27 +304,6 @@ function updateCommentCount(itemId) {
 }
 
 
-// When submitting comment
-submitBtn.addEventListener('click', async () => {
-  if (!name || !comment || !currentItemId || !isHuman) {
-    return alert('Harap isi semua kolom dan centang "Saya bukan robot".');
-  }
-
-  await fetch('/api/comments', {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ name, comment, itemId: currentItemId })
-  });
-
-  document.getElementById('nameInput').value = '';
-  document.getElementById('commentInput').value = '';
-  await loadComments(currentItemId, commentHistory);
-
-  updateCommentCount(currentItemId); // ✅ This replaces the manual fetch logic
-  if (currentRole === 'admin') loadEngagementChart();
-});
-
-
 document.getElementById('searchBox').addEventListener('input', (e) => {
   const term = e.target.value.toLowerCase();
 
@@ -542,8 +521,8 @@ document.querySelectorAll('.news-card').forEach(card => {
 	    return alert('Harap centang "Saya bukan robot".');
 	  }
 
-	  if (!name || !comment || !currentItemId || !isHuman) {
-		return alert('Harap isi semua kolom dan centang "Saya bukan robot".');
+	  if (!name || !comment || !currentItemId) {
+		return alert('Harap isi semua kolom.');
 	  }
 
 	  await fetch('/api/comments', {

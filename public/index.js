@@ -498,7 +498,7 @@ document.querySelectorAll('.news-card').forEach(card => {
 	// ✅ Inject real reCAPTCHA widget container
 	const captchaContainer = document.createElement('div');
 	captchaContainer.className = 'g-recaptcha';
-	captchaContainer.setAttribute('data-sitekey', 'YOUR_SITE_KEY_HERE');
+	captchaContainer.setAttribute('data-sitekey', '6Le8nJMrAAAAAAxYkiTwwyf21mLZwrQG3Pz6_lyY');
 
 	// Remove any previous dummy checkbox if present
 	const dummyCheckbox = clonedFields.querySelector('#humanCheck')?.parentNode;

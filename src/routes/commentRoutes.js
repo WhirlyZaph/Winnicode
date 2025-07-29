@@ -58,24 +58,37 @@ router.get('/:itemId', async (req, res) => {
 });
 
 // POST comment
+const axios = require('axios');
 router.post('/', async (req, res) => {
   try {
     const sanitize = str => str.replace(/[<>]/g, '');
-	const name = sanitize(req.body.name);
-	const comment = sanitize(req.body.comment);
-	const itemId = req.body.itemId;
-	console.log('[COMMENT POST]', { name, comment, itemId });
+    const name = sanitize(req.body.name);
+    const comment = sanitize(req.body.comment);
+    const itemId = req.body.itemId;
+    const captchaToken = req.body.captcha;
 
-    // Validate required fields
-    if (!name || !comment || !itemId) {
-      return res.status(400).json({ error: 'Missing required fields' });
+    console.log('[COMMENT POST]', { name, comment, itemId });
+
+    if (!name || !comment || !itemId || !captchaToken) {
+      return res.status(400).json({ error: 'Missing required fields or captcha' });
     }
 
-    // Validate itemId is an ObjectId
+    // Validate itemId
     if (!mongoose.Types.ObjectId.isValid(itemId)) {
       return res.status(400).json({ error: 'Invalid itemId' });
     }
 
+    // ✅ Verify reCAPTCHA with Google
+    const secretKey = process.env.RECAPTCHA_SECRET;
+    const verifyURL = `https://www.google.com/recaptcha/api/siteverify?secret=${secretKey}&response=${captchaToken}`;
+
+    const captchaResponse = await axios.post(verifyURL);
+
+    if (!captchaResponse.data.success) {
+      return res.status(403).json({ error: 'Failed CAPTCHA verification' });
+    }
+
+    // ✅ Save comment
     const newComment = new Comment({ name, comment, itemId });
     await newComment.save();
     res.status(201).json(newComment);

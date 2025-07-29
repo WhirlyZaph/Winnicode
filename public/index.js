@@ -494,6 +494,28 @@ document.querySelectorAll('.news-card').forEach(card => {
     clonedFields.id = 'focusedCommentFields';
     clonedHistory.id = 'focusedCommentHistory';
     clonedFields.style.display = 'block';
+	
+	// ✅ Inject real reCAPTCHA widget container
+	const captchaContainer = document.createElement('div');
+	captchaContainer.className = 'g-recaptcha';
+	captchaContainer.setAttribute('data-sitekey', 'YOUR_SITE_KEY_HERE');
+
+	// Remove any previous dummy checkbox if present
+	const dummyCheckbox = clonedFields.querySelector('#humanCheck')?.parentNode;
+	if (dummyCheckbox) dummyCheckbox.remove();
+
+	// Insert CAPTCHA after comment input field
+	const commentInput = clonedFields.querySelector('#commentInput');
+	commentInput.parentNode.insertBefore(captchaContainer, commentInput.nextSibling);
+
+	// Wait for the CAPTCHA script to be ready and render it
+	setTimeout(() => {
+	  if (window.grecaptcha && grecaptcha.render) {
+		grecaptcha.render(captchaContainer);
+	  } else {
+		console.warn('reCAPTCHA not loaded yet.');
+	  }
+	}, 300);
 
     // Replace inside modal
     const rightPanel = document.querySelector('.focused-right');
@@ -516,7 +538,10 @@ document.querySelectorAll('.news-card').forEach(card => {
     submitBtn.addEventListener('click', async () => {
 	  const name = clonedFields.querySelector('#nameInput')?.value.trim();
 	  const comment = clonedFields.querySelector('#commentInput')?.value.trim();
-	  const isHuman = clonedFields.querySelector('#humanCheck')?.checked;
+	  const captchaResponse = grecaptcha.getResponse();
+	  if (!captchaResponse) {
+	    return alert('Harap centang "Saya bukan robot".');
+	  }
 
 	  if (!name || !comment || !currentItemId || !isHuman) {
 		return alert('Harap isi semua kolom dan centang "Saya bukan robot".');

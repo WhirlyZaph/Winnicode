@@ -3,6 +3,9 @@ let imageData = [];
 let currentHeadlineIndex = 0;
 let currentImageIndex = 0;
 let currentItemId = null; // track which card is active
+let commentChart = null;
+let currentRole = 'user'; // or 'admin'
+let engagementChartInstance = null;
 const dynamicTextElement = document.getElementById('dynamic-text');
 const headlineElement = document.getElementById('headline');
 const imageSectionElement = document.getElementById('imageContainer');
@@ -15,6 +18,57 @@ const newsMetaElement = document.getElementById('newsMeta');
 const commentFields = document.getElementById('commentFields');
 const submitBtn = document.getElementById('submitCommentBtn');
 const commentHistory = document.getElementById('commentHistory');
+const roleSelector = document.getElementById('roleSelector');
+const adminPanel = document.getElementById('adminPanel');
+
+
+async function fetchItemStats(itemId) {
+  const stats = { likes: 0, saves: 0, comments: 0 };
+  try {
+    const itemRes = await fetch(`/api/items/${itemId}`);
+    if (itemRes.ok) {
+      const item = await itemRes.json();
+      stats.likes = item.likes ?? 0;
+      stats.saves = item.saves ?? 0;
+    }
+
+    const commentRes = await fetch(`/api/comments/${itemId}`);
+    if (commentRes.ok) {
+      const comments = await commentRes.json();
+      stats.comments = comments.length;
+    }
+  } catch (err) {
+    console.warn(`Failed to fetch stats for item ${itemId}`, err);
+  }
+
+  return stats;
+}
+
+
+roleSelector.addEventListener('change', () => {
+  const selectedRole = roleSelector.value;
+  updateRoleView(selectedRole);
+});
+
+function updateRoleView(role) {
+  currentRole = role;
+  if (role === 'admin') {
+    adminPanel.style.display = 'block';
+    loadEngagementChart();
+    document.querySelectorAll('.admin-only').forEach(el => el.style.display = 'inline-block');
+  } else {
+    adminPanel.style.display = 'none';
+    document.querySelectorAll('.admin-only').forEach(el => el.style.display = 'none');
+  }
+  if (currentItemId) {
+    loadComments(currentItemId, commentHistory);  // force reload to update comment UI
+  }
+}
+
+
+// Initialize on page load
+updateRoleView(roleSelector.value);
+
 
 // Load headlines from text file
 async function loadHeadlines() {
@@ -151,38 +205,7 @@ function cycleContent() {
 }
 
 
-
-(async () => {
-  try {
-    // Fetch likes and saves
-    const itemRes = await fetch(`/api/items/${itemId}`);
-    if (itemRes.ok) {
-      const item = await itemRes.json();
-      likeCountSpan.textContent = item.likes ?? 0;
-      saveCountSpan.textContent = item.saves ?? 0;
-    } else {
-      likeCountSpan.textContent = 0;
-      saveCountSpan.textContent = 0;
-    }
-
-    // Fetch comment count separately
-    const commentRes = await fetch(`/api/comments/${itemId}`);
-    if (commentRes.ok) {
-      const comments = await commentRes.json();
-      commentCountSpan.textContent = comments.length;
-    } else {
-      commentCountSpan.textContent = 0;
-    }
-
-  } catch (err) {
-    console.error(`Error fetching counts for ${itemId}:`, err);
-    likeCountSpan.textContent = 0;
-    saveCountSpan.textContent = 0;
-    commentCountSpan.textContent = 0;
-  }
-})();
-
-async function loadComments(itemId) {
+async function loadComments(itemId, container) {
   if (!itemId) {
     console.warn('Missing itemId when loading comments');
     return;
@@ -190,11 +213,17 @@ async function loadComments(itemId) {
 
   try {
     const res = await fetch(`/api/comments/${itemId}`);
-    
+
+    if (res.status === 404) {
+      console.warn('No comments found for item', itemId);
+      container.innerHTML = '<p>Tidak ada komentar.</p>';
+      return;
+    }
+
     if (!res.ok) {
       const err = await res.json();
       console.error('Failed to fetch comments:', err);
-      commentHistory.innerHTML = '<p style="color: red;">Gagal memuat komentar untuk berita ini.</p>';
+      container.innerHTML = '<p style="color: red;">Gagal memuat komentar untuk berita ini.</p>';
       return;
     }
 
@@ -202,33 +231,84 @@ async function loadComments(itemId) {
 
     if (!Array.isArray(data)) {
       console.error('Invalid comment response:', data);
-      commentHistory.innerHTML = '<p style="color: red;">Format komentar tidak valid.</p>';
+      container.innerHTML = '<p style="color: red;">Format komentar tidak valid.</p>';
       return;
     }
 
-    commentHistory.innerHTML = data.map(c => {
+    container.innerHTML = ''; // Clear old comments
+
+    data.forEach(c => {
       const time = new Date(c.createdAt).toLocaleString(undefined, {
         year: 'numeric', month: 'short', day: 'numeric',
         hour: '2-digit', minute: '2-digit'
       });
-      return `<p><strong>${c.name}</strong> (${time}):<br>${c.comment}</p><hr>`;
-    }).join('');
 
-    commentFields.style.display = 'block';
+      const commentBox = document.createElement('div');
+      commentBox.className = 'comment-box';
+      commentBox.innerHTML = `
+        <p><strong>${c.name}</strong> (${time}):<br>${c.comment}</p>
+      `;
+
+      // Admin-only delete button
+      if (currentRole === 'admin') {
+        const delBtn = document.createElement('button');
+        delBtn.textContent = '🗑️ Delete';
+        delBtn.style.marginLeft = '10px';
+        delBtn.classList.add('admin-only');
+
+        delBtn.onclick = async () => {
+          const confirmDelete = confirm('Are you sure you want to delete this comment?');
+          if (!confirmDelete) return;
+
+          const res = await fetch(`/api/comments/${c._id}`, {
+            method: 'DELETE'
+          });
+
+          if (res.ok) {
+            commentBox.remove();
+            updateCommentCount(itemId);
+            loadEngagementChart(); // update chart too
+          } else {
+            alert('Failed to delete comment.');
+          }
+        };
+
+        commentBox.appendChild(delBtn);
+      }
+
+      container.appendChild(commentBox);
+      container.appendChild(document.createElement('hr'));
+    });
+
     currentItemId = itemId;
-    console.log('Showing comment fields for:', itemId);
   } catch (err) {
     console.error('Unexpected error loading comments:', err);
-    commentHistory.innerHTML = '<p style="color: red;">Terjadi kesalahan saat memuat komentar.</p>';
+    container.innerHTML = '<p style="color: red;">Terjadi kesalahan saat memuat komentar.</p>';
   }
+}
+
+
+function updateCommentCount(itemId) {
+  const card = document.querySelector(`.news-card[data-id="${itemId}"]`);
+  const countSpan = card?.querySelector('.comment-count');
+  if (!countSpan) return;
+
+  fetch(`/api/comments/${itemId}`)
+    .then(res => res.json())
+    .then(data => {
+      if (Array.isArray(data)) {
+        countSpan.textContent = data.length;
+      }
+    })
+    .catch(err => console.warn('Failed to update comment count bubble:', err));
 }
 
 
 // When submitting comment
 submitBtn.addEventListener('click', async () => {
-  const name = document.getElementById('nameInput').value.trim();
-  const comment = document.getElementById('commentInput').value.trim();
-  if (!name || !comment || !currentItemId) return alert('Please fill out all fields.');
+  if (!name || !comment || !currentItemId || !isHuman) {
+    return alert('Harap isi semua kolom dan centang "Saya bukan robot".');
+  }
 
   await fetch('/api/comments', {
     method: 'POST',
@@ -238,20 +318,10 @@ submitBtn.addEventListener('click', async () => {
 
   document.getElementById('nameInput').value = '';
   document.getElementById('commentInput').value = '';
-  await loadComments(currentItemId);
+  await loadComments(currentItemId, commentHistory);
 
-  // ✅ Update comment count bubble for the current card
-  const card = document.querySelector(`.news-card[data-id="${currentItemId}"]`);
-  const countSpan = card?.querySelector('.comment-count');
-  if (countSpan) {
-    try {
-      const res = await fetch(`/api/comments/${currentItemId}`);
-      const updatedComments = await res.json();
-      countSpan.textContent = updatedComments.length;
-    } catch (err) {
-      console.warn('Failed to update comment count bubble:', err);
-    }
-  }
+  updateCommentCount(currentItemId); // ✅ This replaces the manual fetch logic
+  if (currentRole === 'admin') loadEngagementChart();
 });
 
 
@@ -304,27 +374,15 @@ function setupCardButtons() {
     const commentCountSpan = commentBtn.querySelector('.comment-count');
 
     // Fetch and show like/save/comment counts
-    (async () => {
-      try {
-        const itemRes = await fetch(`/api/items/${itemId}`);
-        if (itemRes.ok) {
-          const item = await itemRes.json();
-          likeCountSpan.textContent = item.likes ?? 0;
-          saveCountSpan.textContent = item.saves ?? 0;
-        }
-
-        const commentRes = await fetch(`/api/comments/${itemId}`);
-        if (commentRes.ok) {
-          const comments = await commentRes.json();
-          commentCountSpan.textContent = comments.length;
-        }
-      } catch (err) {
-        console.warn(`Failed to fetch data for card ${itemId}`, err);
-      }
-    })();
+    fetchItemStats(itemId).then(stats => {
+	  likeCountSpan.textContent = stats.likes;
+	  saveCountSpan.textContent = stats.saves;
+	  commentCountSpan.textContent = stats.comments;
+	});
 
     // Button actions
-    likeBtn.addEventListener('click', async () => {
+    likeBtn.addEventListener('click', async (e) => {
+	  e.stopPropagation(); // Prevent card click
       try {
         const res = await fetch(`/api/items/${itemId}/like`, { method: 'POST' });
         const data = await res.json();
@@ -332,35 +390,43 @@ function setupCardButtons() {
       } catch (err) {
         console.error(`Failed to like ${itemId}`, err);
       }
+	  if (currentRole === 'admin') loadEngagementChart();
     });
 
-    saveBtn.addEventListener('click', async () => {
-      try {
+    saveBtn.addEventListener('click', async (e) => {
+      e.stopPropagation();
+	  try {
         const res = await fetch(`/api/items/${itemId}/save`, { method: 'POST' });
         const data = await res.json();
         saveCountSpan.textContent = data.saves;
       } catch (err) {
         console.error(`Failed to save ${itemId}`, err);
       }
+	  if (currentRole === 'admin') loadEngagementChart();
     });
 
     commentBtn.addEventListener('click', () => {
-      loadComments(itemId);
+	  loadComments(itemId, commentHistory);
       setTimeout(() => {
         commentFields.scrollIntoView({ behavior: 'smooth' });
       }, 100);
     });
 
-    shareBtn.addEventListener('click', () => {
+    shareBtn.addEventListener('click', (e) => {
+      e.stopPropagation();
       const url = `${window.location.origin}/news/${itemId}`;
       navigator.clipboard.writeText(url);
       alert('Link copied!');
+	  if (currentRole === 'admin') loadEngagementChart();
     });
   });
 }
 
 
 async function startCycling() {
+	commentFields.style.display = 'none';
+	commentHistory.style.display = 'none';
+	
 	// Load both data sources
 	await Promise.all([loadHeadlines(), loadImageData()]);
 	
@@ -392,6 +458,149 @@ async function startCycling() {
 	
 	setupCardButtons();
 }
+
+
+// Focused View Elements
+const focusedOverlay = document.getElementById('focusedOverlay');
+const closeFocusedView = document.getElementById('closeFocusedView');
+const focusedImage = document.getElementById('focusedImage');
+const focusedTitle = document.getElementById('focusedTitle');
+const focusedDescription = document.getElementById('focusedDescription');
+const focusedCommentFields = document.getElementById('focusedCommentFields');
+const focusedCommentHistory = document.getElementById('focusedCommentHistory');
+const focusedCategory = document.getElementById('focusedCategory'); // optional, unimplemented
+const focusedAuthor = document.getElementById('focusedAuthor');     // ^
+const focusedDate = document.getElementById('focusedDate');         // ^
+
+document.querySelectorAll('.news-card').forEach(card => {
+  card.addEventListener('click', () => {
+    const imgSrc = card.querySelector('img').src;
+	document.getElementById('focusedImage').src = imgSrc;
+	document.getElementById('focusedLeftBlur').src = imgSrc;
+    const title = card.querySelector('h3').innerText;
+    const desc = card.querySelector('p').innerText;
+    const itemId = card.dataset.id;
+
+    currentItemId = itemId;
+
+    // Populate modal
+    focusedImage.src = imgSrc;
+    focusedTitle.innerText = title;
+    focusedDescription.innerText = desc;
+
+    // Clone and prepare comment input + history
+    const clonedFields = commentFields.cloneNode(true);
+    const clonedHistory = document.createElement('div');
+    clonedFields.id = 'focusedCommentFields';
+    clonedHistory.id = 'focusedCommentHistory';
+    clonedFields.style.display = 'block';
+
+    // Replace inside modal
+    const rightPanel = document.querySelector('.focused-right');
+    const oldFields = document.getElementById('focusedCommentFields');
+    const oldHistory = document.getElementById('focusedCommentHistory');
+    if (oldFields) oldFields.remove();
+    if (oldHistory) oldHistory.remove();
+    rightPanel.appendChild(clonedFields);
+    rightPanel.appendChild(clonedHistory);
+
+    // Load comments into modal
+    loadComments(itemId, clonedHistory);
+
+    // Attach submit logic to new button
+    const submitBtn = clonedFields.querySelector('#submitCommentBtn');
+    const nameInput = clonedFields.querySelector('#nameInput');
+    const commentInput = clonedFields.querySelector('#commentInput');
+    const captchaCheckbox = clonedFields.querySelector('#captchaCheckbox');
+
+    submitBtn.addEventListener('click', async () => {
+	  const name = clonedFields.querySelector('#nameInput')?.value.trim();
+	  const comment = clonedFields.querySelector('#commentInput')?.value.trim();
+	  const isHuman = clonedFields.querySelector('#humanCheck')?.checked;
+
+	  if (!name || !comment || !currentItemId || !isHuman) {
+		return alert('Harap isi semua kolom dan centang "Saya bukan robot".');
+	  }
+
+	  await fetch('/api/comments', {
+		method: 'POST',
+		headers: { 'Content-Type': 'application/json' },
+		body: JSON.stringify({ name, comment, itemId: currentItemId })
+	  });
+
+	  clonedFields.querySelector('#nameInput').value = '';
+	  clonedFields.querySelector('#commentInput').value = '';
+
+	  await loadComments(currentItemId, clonedHistory);
+	  updateCommentCount(currentItemId);
+	  if (currentRole === 'admin') loadEngagementChart();
+	});
+
+    // Show modal
+    focusedOverlay.style.display = 'flex';
+  });
+});
+
+// Close modal
+document.getElementById('closeFocusedView').addEventListener('click', () => {
+  document.getElementById('focusedOverlay').style.display = 'none';
+});
+
+
+function loadEngagementChart() {
+  fetch('/api/items/summary')
+    .then(res => res.json())
+    .then(data => {
+      const labels = data.map(d => d.name);
+      const likes = data.map(d => d.likes || 0);
+      const saves = data.map(d => d.saves || 0);
+      const comments = data.map(d => d.comments || 0);
+
+      const ctx = document.getElementById('engagementChart').getContext('2d');
+
+      // 💣 Destroy existing chart before creating new one
+      if (engagementChartInstance) {
+        engagementChartInstance.destroy();
+      }
+
+      engagementChartInstance = new Chart(ctx, {
+        type: 'bar',
+        data: {
+          labels,
+          datasets: [
+            {
+              label: 'Likes',
+              backgroundColor: '#4CAF50',
+              data: likes,
+            },
+            {
+              label: 'Saves',
+              backgroundColor: '#2196F3',
+              data: saves,
+            },
+            {
+              label: 'Comments',
+              backgroundColor: '#FF9800',
+              data: comments,
+            }
+          ]
+        },
+        options: {
+          responsive: true,
+          plugins: {
+            title: {
+              display: true,
+              text: 'Engagement Summary'
+            }
+          }
+        }
+      });
+    })
+    .catch(err => {
+      console.error('Failed to load engagement chart:', err);
+    });
+}
+
 
 // Attach events
 document.getElementById('scrollRightBtn')?.addEventListener('mouseenter', () => startScroll('right'));

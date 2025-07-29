@@ -382,7 +382,7 @@ nav a:hover {
     margin-top: 10px;
 }
 
-.comment-fields-wrapper {
+.originalCommentFieldsWrapper {
   display: flex;
   justify-content: center;
   align-items: center;
@@ -429,4 +429,135 @@ footer {
     text-align: center;
     padding: 20px;
     margin-top: 40px;
+}
+
+#focusedOverlay {
+  position: fixed;
+  top: 0; left: 0;
+  width: 100vw; height: 100vh;
+  background: rgba(0, 0, 0, 0.85);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1000;
+}
+
+.focused-left-blur {
+  position: absolute;
+  top: 0;
+  left: 0;
+  min-width: 100%;
+  min-height: 100%;
+  width: auto;
+  height: auto;
+  object-fit: cover;
+  filter: blur(25px) brightness(0.6);
+  z-index: 0; /* Ensure it's behind everything else */
+  pointer-events: none; /* Prevent mouse events */
+}
+
+#focusedImage {
+  position: relative;
+  z-index: 1;
+  max-width: 90%;
+  max-height: 90%;
+  object-fit: contain;
+  border-radius: 6px;
+  box-shadow: 0 0 12px rgba(0, 0, 0, 0.3);
+}
+
+.focused-container {
+  background: white;
+  width: 90%;
+  height: 90%;
+  display: flex;
+  flex-direction: row;
+  position: relative;
+  overflow: hidden;
+  border-radius: 10px;
+}
+
+#closeFocusedView {
+  position: absolute;
+  top: 10px; right: 15px;
+  background: none;
+  border: none;
+  font-size: 28px;
+  cursor: pointer;
+  z-index: 10;
+}
+
+.focused-left {
+  position: relative;
+  width: 70%;
+  aspect-ratio: 4 / 3;
+  overflow: hidden;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background-color: #000;
+}
+
+.focused-left img {
+  max-height: 100%;
+  max-width: 100%;
+  object-fit: contain;
+}
+
+.focused-right {
+  padding: 20px;
+  flex: 1;
+  overflow-y: auto;
+  max-height: 90vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+#focusedCommentFields {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 12px;
+  margin-top: 20px;
+  width: 100%;
+}
+
+#focusedCommentFields label {
+  display: block;
+  text-align: center;
+  margin-bottom: 5px;
+  font-weight: bold;
+}
+
+#focusedCommentFields input,
+#focusedCommentFields textarea {
+  width: 95%;
+  max-width: 600px;
+  background-color: #fff !important;
+  border: 1px solid #ccc;
+  border-radius: 5px;
+  padding: 10px;
+  font-size: 1rem;
+  color: #000 !important;
+}
+
+#focusedCommentFields textarea {
+  resize: vertical;
+  min-height: 100px;
+}
+
+#focusedCommentFields button {
+  padding: 8px 16px;
+  cursor: pointer;
+}
+
+#focusedCommentFields .captcha-wrapper {
+  margin-top: 10px;
+}
+
+#focusedCommentHistory {
+  width: 95%;
+  max-width: 600px;
+  margin: 0 auto;
 }

@@ -1,4 +1,4 @@
-const Item = require('../models/Item');
+const Item = require('../models/itemModel');
 
 // Create Item
 const createItem = async (req, res) => {
@@ -50,4 +50,14 @@ const deleteItem = async (req, res) => {
   }
 };
 
-module.exports = { createItem, getItems, updateItem, deleteItem };
+const getItemById = async (req, res) => {
+  try {
+    const item = await Item.findById(req.params.id);
+    if (!item) return res.status(404).json({ message: 'Item not found' });
+    res.json(item);
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+};
+
+module.exports = { createItem, getItems, updateItem, deleteItem, getItemById };

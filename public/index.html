@@ -6,6 +6,8 @@
     <link rel="stylesheet" href="index.css">
 	<link rel="stylesheet" href="keyframes.css">
     <title>WinniCode - Portal Berita</title>
+	<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+	<script src="https://www.google.com/recaptcha/api.js" async defer></script>
 </head>
 <body>
     <header>
@@ -19,6 +21,20 @@
         </nav>
     </header>
     
+	<div style="display: flex; justify-content: flex-end; padding: 10px;">
+	  <label for="roleSelector" style="margin-right: 8px;">Login as:</label>
+	  <select id="roleSelector">
+		<option value="user">User</option>
+		<option value="admin">Admin</option>
+	  </select>
+	</div>
+	
+	<div id="adminPanel" style="display: none; padding: 10px; background-color: #f3f3f3; border: 1px solid #ccc;">
+	  <h3>Admin Panel</h3>
+	  <canvas id="engagementChart" height="50"></canvas>
+	  <p>This is visible only to admins. Analytics and management tools will appear here. Click a category to disable.</p>
+	</div>
+	
 	<div class="headline-container">
 		<div class="headline" id="headline">
 			<span class="breaking-prefix">Breaking: </span>
@@ -198,20 +214,40 @@
 	
 
 	<!-- Input Fields (Initially Hidden) -->
-	<div class="comment-fields-wrapper">
+	<div class="originalCommentFieldsWrapper">
 		<div id="commentFields" style="display: none;">
 		  <label for="nameInput">Name:</label><br />
 		  <input type="text" id="nameInput" placeholder="Your name" /><br /><br />
 		  <label for="commentInput">Comment:</label><br />
 		  <textarea id="commentInput" placeholder="Your comment"></textarea><br /><br />
+		  <label><input type="checkbox" id="humanCheck"> Saya bukan robot</label>
 		  <button id="submitCommentBtn">Submit</button>
 		</div>
 	</div>
 
 	<!-- Comment History Box -->
-	<h3>Comment History</h3>
-	<div id="commentHistory" style="border: 1px solid #ccc; padding: 10px; max-height: 200px; overflow-y: auto;"></div>
-    
+	<div id="originalCommentHistoryWrapper" Hidden>
+	  <h3>Comment History</h3>
+	  <div id="commentHistory" style="border: 1px solid #ccc; padding: 10px; max-height: 200px; overflow-y: auto;"></div>
+    </div>
+	
+	<!-- Focused News View Modal -->
+	<div id="focusedOverlay" style="display:none;">
+	  <div id="focusedView" class="focused-container">
+		<button id="closeFocusedView">×</button>
+		<div class="focused-left">
+		  <img id="focusedLeftBlur" class="focused-left-blur" src="" alt="Blurred Background">
+		  <img id="focusedImage" src="" alt="News Image">
+		</div>
+		<div class="focused-right">
+		  <h3 id="focusedTitle"></h3>
+		  <p id="focusedDescription"></p>
+		  <div id="focusedCommentFields"></div>
+		  <div id="focusedCommentHistory"></div>
+		</div>
+	  </div>
+	</div>
+	
     <footer>
         <p>&copy; 2025 WinniCode. All rights reserved.</p>
     </footer>

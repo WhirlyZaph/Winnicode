@@ -526,9 +526,14 @@ document.querySelectorAll('.news-card').forEach(card => {
 	  }
 
 	  await fetch('/api/comments', {
-		method: 'POST',
-		headers: { 'Content-Type': 'application/json' },
-		body: JSON.stringify({ name, comment, itemId: currentItemId })
+	    method: 'POST',
+	    headers: { 'Content-Type': 'application/json' },
+	    body: JSON.stringify({
+		  name,
+		  comment,
+		  itemId: currentItemId,
+		  captcha: grecaptcha.getResponse()  // ✅ Add this line
+	    })
 	  });
 
 	  clonedFields.querySelector('#nameInput').value = '';

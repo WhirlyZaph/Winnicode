@@ -541,6 +541,7 @@ document.querySelectorAll('.news-card').forEach(card => {
 
 	  await loadComments(currentItemId, clonedHistory);
 	  updateCommentCount(currentItemId);
+	  grecaptcha.reset();
 	  if (currentRole === 'admin') loadEngagementChart();
 	});
 
